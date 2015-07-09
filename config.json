@@ -1,0 +1,11 @@
+{
+  "app": {
+    "host": "localhost",
+    "port": 8080,
+    "schema": "http",
+    "url": "http://109.162.33.217:8080"
+  },
+  "database": {
+    "url": "postgres://onea:241994@127.0.0.1/juvity"
+  }
+}
