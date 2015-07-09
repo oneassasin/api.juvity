@@ -7,5 +7,8 @@
   },
   "database": {
     "url": "postgres://onea:241994@127.0.0.1/juvity"
+  },
+  "session": {
+    "expiredTime": 86400
   }
 }

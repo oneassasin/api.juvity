@@ -12,10 +12,10 @@ module.exports = function pgMiddleware() {
 
       req.closeClient = client.end;
 
-      client.promiseQuery = function (query) {
-        return Q.promise(function (resolve, reject, notify) {
+      client.promiseQuery = function(query) {
+        return Q.promise(function(resolve, reject, notify) {
           sql(query);
-          client.query(query, function (err, results) {
+          client.query(query, function(err, results) {
             if (err)
               return reject(err);
             resolve(results);
