@@ -4,6 +4,18 @@ const Q = require('q');
 const escaper = require('../libs/escaper');
 
 module.exports.getUsersCount = function(req, res, next) {
+  const query = squel.select()
+    .from('juvity.users')
+    .field('COUNT(id)', 'usersCount', {
+      dontQuote: true
+    })
+    .toString();
+  req.pgClient.promiseQuery(query)
+    .then(function(results) {
+      res.status(200).send(results.rows[0]).end();
+    })
+    .fail(next)
+    .fin(req.closeClient);
 };
 
 module.exports.getUserId = function(req, res, next) {

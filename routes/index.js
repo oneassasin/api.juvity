@@ -1,11 +1,11 @@
 const debug = require('debug')('Errors');
-const sessionsController = require('./sessionsRouter');
-const usersController = require('./usersRouter');
+const sessionsRouter = require('./sessionsRouter');
+const usersRouter = require('./usersRouter');
 
 module.exports = function(app) {
 
-  app.use('/', sessionsController);
-  app.use('/', usersController);
+  app.use('/', sessionsRouter);
+  app.use('/', usersRouter);
 
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
