@@ -44,7 +44,7 @@ function _authentication(req) {
             .setFields(values)
             .where('session = ?', results.rows[0].session)
             .toString();
-          return req.pgClient.promiseQuery(query)
+          req.pgClient.promiseQuery(query)
             .then(function(results) {
               const error = new Error('Session expired');
               error.status = 400;

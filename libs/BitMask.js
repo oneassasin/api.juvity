@@ -1,13 +1,12 @@
 function BitMask(value) {
   this.base = value.length;
-  if (value)
-    this.value = parseInt(value);
+  this.value = value;
 }
 
 BitMask.prototype.checkBit = function(position) {
   if (position > this.base)
     return false;
-  return !!(((this.base - position)) & this.value);
+  return (this.value[position] == '1');
 };
 
 BitMask.prototype.bitMask = function() {

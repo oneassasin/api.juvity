@@ -31,16 +31,26 @@ module.exports.sanitize = function(object) {
       function(err) {
         if (err)
           return reject(err);
+        if (_getLength(results) === 0) {
+          const error = new Error('Empty params object');
+          error.status = 400;
+          return reject(error);
+        }
+
         resolve(results);
       });
   });
 };
 
 module.exports.getLength = function(object) {
+  return _getLength(object);
+};
+
+function _getLength(object) {
   if (typeof object !== 'object')
     return 0;
   return Object.keys(object).length;
-};
+}
 
 module.exports.validateJSON = function(object) {
   try {
