@@ -50,6 +50,27 @@ module.exports.createUniversity = function(req, res, next) {
 };
 
 module.exports.updateUniversity = function(req, res, next) {
+  const universityId = req.sanitize('universityID').escape();
+  const values = {
+    name: req.sanitize('name').escape(),
+    name_abbr: req.sanitize('nameAbbr').escape(),
+    country: req.sanitize('country').escape(),
+    city: req.sanitize('city').escape()
+  };
+  escaper.sanitize(values)
+    .then(function(results) {
+      const query = squel.update()
+        .table('juvity.universities')
+        .setFields(results)
+        .where('id = ?', universityId)
+        .toString();
+      return req.pgClient.promiseQuery(query);
+    })
+    .then(function(results) {
+      res.status(200).end();
+    })
+    .fail(next)
+    .fin(req.closeClient);
 };
 
 module.exports.deleteUniversity = function(req, res, next) {
