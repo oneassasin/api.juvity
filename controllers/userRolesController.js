@@ -44,6 +44,25 @@ module.exports.createUserRole = function(req, res, next) {
 };
 
 module.exports.updateUserRole = function(req, res, next) {
+  const roleId = req.sanitize('roleID').escape();
+  const values = {
+    name: req.sanitize('name').escape(),
+    bit_mask: req.sanitize('bit_mask').escape()
+  };
+  escaper.sanitize(values)
+    .then(function(results) {
+      const query = squel.update()
+        .table('juvity.user_roles')
+        .setFields(results)
+        .where('id = ?', roleId)
+        .toString();
+      return req.pgClient.promiseQuery(query);
+    })
+    .then(function(results) {
+      res.status(200).end();
+    })
+    .fail(next)
+    .fin(req.closeClient);
 };
 
 module.exports.deleteUserRole = function(req, res, next) {
