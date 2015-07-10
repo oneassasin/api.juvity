@@ -74,4 +74,22 @@ module.exports.updateUniversity = function(req, res, next) {
 };
 
 module.exports.deleteUniversity = function(req, res, next) {
+  const universityId = req.sanitize('universityID').escape();
+  const query = squel.delete()
+    .from('juvity.universities')
+    .where('id = ?', universityId)
+    .toString();
+  req.pgClient.promiseQuery(query)
+    .then(function(results) {
+      res.status(200).end();
+    })
+    .fail(function(err) {
+      if (err.code === '23503') {
+        err = new Error('Record already in use!');
+        err.status = 403;
+      }
+
+      next(err);
+    })
+    .fin(req.closeClient);
 };
