@@ -7,11 +7,11 @@ function BitMask(value) {
 BitMask.prototype.checkBit = function(position) {
   if (position > this.base)
     return false;
-  return !!((1 << (this.base - position)) & this.value);
+  return !!(((this.base - position)) & this.value);
 };
 
 BitMask.prototype.bitMask = function() {
-  return this.value.toString(2);
+  return this.value.toString();
 };
 
 module.exports = BitMask;

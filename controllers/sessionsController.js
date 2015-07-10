@@ -40,8 +40,8 @@ module.exports.createSession = function(req, res, next) {
       return req.pgClient.promiseQuery(query);
     })
     .then(function(results) {
-      const SID = sha1(new Date().getTime() + req.session.userId + randomizer.randomString(6));
-      const expiredTime = Date.now() + parseInt(nconf.get('session:expiredTime'));
+      const SID = sha1(Date.now() + req.session.userId + randomizer.randomString(6));
+      const expiredTime = (Date.now() / 1000) + parseInt(nconf.get('session:expiredTime'));
       req.session.SID = SID;
       const values = {
         user_id: escaper.escape(req.session.userId),
@@ -75,7 +75,7 @@ module.exports.getSessionList = function(req, res, next) {
   var countInt = parseInt(req.sanitize('count').escape() || 25);
   if (countInt > 25)
     countInt = 25;
-  var query = squel.select()
+  const query = squel.select()
     .from('juvity.sessions')
     .limit(countInt)
     .offset(skipInt)

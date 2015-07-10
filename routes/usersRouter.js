@@ -4,6 +4,7 @@ const usersController = require('../controllers/usersController');
 const permissions = require('../middleware/permissions');
 
 router.get('/users/count/', permissions.authentication(), usersController.getUsersCount);
+router.get('/users/', permissions.permissionCheck(1), usersController.getUsersList);
 router.get('/users/:userID([0-9]+)/', permissions.authentication(), usersController.getUserId);
 router.post('/users/', usersController.createUser);
 router.put('/user/', permissions.authentication(), usersController.updateUser);
