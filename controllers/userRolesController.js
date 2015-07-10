@@ -19,7 +19,28 @@ module.exports.getUserRoles = function(req, res, next) {
     .fin(req.closeClient);
 };
 
-module.exports.createUserRoleId = function(req, res, next) {
+module.exports.createUserRole = function(req, res, next) {
+  req.assert('name', 'name_required').notEmpty();
+  req.assert('mask', 'mask_required').notEmpty();
+  if (req.validationErrors()) {
+    req.closeClient();
+    return res.status(400).end();
+  }
+
+  const values = {
+    name: req.sanitize('name').escape(),
+    bit_mask: req.sanitize('mask').escape()
+  };
+  const query = squel.insert()
+    .into('juvity.user_roles')
+    .setFields(values)
+    .toString();
+  req.pgClient.promiseQuery(query)
+    .then(function(results) {
+      res.status(201).end();
+    })
+    .fail(next)
+    .fin(req.closeClient)
 };
 
 module.exports.updateUserRole = function(req, res, next) {
