@@ -69,6 +69,44 @@ module.exports.getUsersList = function(req, res, next) {
 };
 
 module.exports.createUser = function(req, res, next) {
+  const nconf = require('nconf'); // Default user role
+  req.assert('email', 'email_required').notEmpty();
+  req.assert('password', 'password_required').notEmpty();
+  req.assert('name', 'name_required').notEmpty();
+  req.assert('surname', 'surname_required').notEmpty();
+  req.assert('patronymic', 'patronymic_required').notEmpty();
+  req.assert('gender', 'gender_required').notEmpty();
+  if (req.validationErrors()) {
+    req.closeClient();
+    return res.status(400).end();
+  }
+
+  const values = {
+    email: req.sanitize('email').escape(),
+    hash_password: sha1(req.sanitize('password').escape()),
+    name: req.sanitize('name').escape(),
+    surname: req.sanitize('surname').escape(),
+    patronymic: req.sanitize('patronymic').escape(),
+    gender: req.sanitize('gender').escape(),
+    role_id: nconf.get('app:defaultUserRoleId')
+  };
+  const query = squel.insert()
+    .into('juvity.users')
+    .setFields(values)
+    .toString();
+  req.pgClient.promiseQuery(query)
+    .then(function(results) {
+      res.status(201).end();
+    })
+    .fail(function(err) {
+      if (err.code === '23505') {
+        err = new Error('Duplicate email');
+        err.status = 403;
+      }
+
+      next(err);
+    })
+    .fin(req.closeClient)
 };
 
 module.exports.updateUser = function(req, res, next) {
