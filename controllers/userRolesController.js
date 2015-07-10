@@ -66,5 +66,23 @@ module.exports.updateUserRole = function(req, res, next) {
 };
 
 module.exports.deleteUserRole = function(req, res, next) {
+  const roleId = req.sanitize('roleID').escape();
+  const query = squel.delete()
+    .from('juvity.user_roles')
+    .where('id = ?', roleId)
+    .toString();
+  req.pgClient.promiseQuery(query)
+    .then(function(results) {
+      res.status(200).end();
+    })
+    .fail(function(err) {
+      if (err.code === '23503') {
+        err = new Error('Record already in use!');
+        err.status = 403;
+      }
+
+      next(err);
+    })
+    .fin(req.closeClient);
 };
 
