@@ -23,7 +23,7 @@ module.exports.getInstitutions = function(req, res, next) {
 };
 
 module.exports.createInstitute = function(req, res, next) {
-  const universityID = req.sanitize('universityID').escape();
+  const universityID = req.session.universityID;
   req.assert('longitude', 'longitude_required').notEmpty();
   req.assert('latitude', 'latitude_required').notEmpty();
   req.assert('name', 'name_required').notEmpty();
@@ -33,15 +33,18 @@ module.exports.createInstitute = function(req, res, next) {
   }
 
   const values = {
-    coordinate: pointer.format(req.sanitize('latitude').escape(), req.sanitize('longitude').escape()),
     name: req.sanitize('name').escape(),
     name_abbr: req.sanitize('nameAbbr').escape(),
     university_id: universityID
   };
   escaper.sanitize(values)
     .then(function(results) {
+      const coordinate = pointer.format(req.sanitize('latitude').escape(), req.sanitize('longitude').escape());
       const query = squel.insert()
         .into('juvity.institutions')
+        .set('coordinate', coordinate, {
+          dontQuote: true
+        })
         .setFields(results)
         .toString();
       return req.pgClient.promiseQuery(query);
@@ -64,14 +67,17 @@ module.exports.updateInstitute = function(req, res, next) {
   const universityID = req.sanitize('universityID').escape();
   const instituteID = req.sanitize('instituteID').escape();
   const values = {
-    coordinate: pointer.format(req.sanitize('latitude').escape(), req.sanitize('longitude').escape()),
     name: req.sanitize('name').escape(),
     name_abbr: req.sanitize('nameAbbr').escape()
   };
   escaper.sanitize(values)
     .then(function(results) {
+      const coordinate = pointer.format(req.sanitize('latitude').escape(), req.sanitize('longitude').escape());
       const query = squel.update()
         .table('juvity.institutions')
+        .set('coordinate', coordinate, {
+          dontQuote: true
+        })
         .setFields(results)
         .where('id = ?', instituteID)
         .where('university_id = ?', universityID)
