@@ -57,6 +57,27 @@ module.exports.createFaculty = function(req, res, next) {
 };
 
 module.exports.updateFaculty = function(req, res, next) {
+  const instituteID = req.sanitize('instituteID').escape();
+  const facultyID = req.sanitize('facultyID').escape();
+  const values = {
+    name: req.sanitize('name').escape(),
+    name_abbr: req.sanitize('nameAbbr').escape()
+  };
+  escaper.sanitize(values)
+    .then(function(results) {
+      const query = squel.update()
+        .table('juvity.faculties')
+        .setFields(results)
+        .where('id = ?', facultyID)
+        .where('institute_id = ?', instituteID)
+        .toString();
+      return req.pgClient.promiseQuery(query);
+    })
+    .then(function(results) {
+      res.status(200).end();
+    })
+    .fail(next)
+    .fin(req.closeClient);
 };
 
 module.exports.deleteFaculty = function(req, res, next) {
