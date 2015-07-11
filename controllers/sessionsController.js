@@ -20,11 +20,10 @@ module.exports.createSession = function(req, res, next) {
   const query = squel.select()
     .from('juvity.users')
     .where('email = ?', email)
-    .where('hash_password = ?', hashPassword)
     .toString();
   req.pgClient.promiseQuery(query)
     .then(function(results) {
-      if (results.rowCount === 0) {
+      if (results.rowCount === 0 || results.rows[0].hash_password !== hashPassword) {
         const error = new Error();
         error.status = 404;
         return Q.reject(error);

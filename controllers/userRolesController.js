@@ -39,7 +39,14 @@ module.exports.createUserRole = function(req, res, next) {
     .then(function(results) {
       res.status(201).end();
     })
-    .fail(next)
+    .fail(function(err) {
+      if (err.code === '23505') {
+        err = new Error('Duplicate user role');
+        err.status = 403;
+      }
+
+      next(err);
+    })
     .fin(req.closeClient)
 };
 
@@ -77,7 +84,7 @@ module.exports.deleteUserRole = function(req, res, next) {
     })
     .fail(function(err) {
       if (err.code === '23503') {
-        err = new Error('Record already in use!');
+        err = new Error('User role already in use!');
         err.status = 403;
       }
 
