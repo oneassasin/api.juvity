@@ -81,4 +81,24 @@ module.exports.updateFaculty = function(req, res, next) {
 };
 
 module.exports.deleteFaculty = function(req, res, next) {
+  const instituteID = req.sanitize('instituteID').escape();
+  const facultyID = req.sanitize('facultyID').escape();
+  const query = squel.delete()
+    .from('juvity.faculties')
+    .where('id = ?', facultyID)
+    .where('institute_id = ?', instituteID)
+    .toString();
+  req.pgClient.promiseQuery(query)
+    .then(function(results) {
+      res.status(200).end();
+    })
+    .fail(function(err) {
+      if (err.code === '23503') {
+        err = new Error('Faculty already in use!');
+        err.status = 403;
+      }
+
+      next(err);
+    })
+    .fin(req.closeClient);
 };
