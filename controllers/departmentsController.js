@@ -1,17 +1,17 @@
 const squel = require('squel');
 const escaper = require('../libs/escaper');
 
-module.exports.getFacultiesList = function(req, res, next) {
-  const instituteID = req.sanitize('instituteID').escape();
+module.exports.getDepartmentsList = function(req, res, next) {
+  const departmentID = req.sanitize('departmentID').escape();
   const skipInt = parseInt(req.sanitize('skip').escape() || 0);
   var countInt = parseInt(req.sanitize('count').escape() || 25);
   if (countInt > 25)
     countInt = 25;
   const query = squel.select()
-    .from('juvity.faculties')
+    .from('juvity.departments')
     .limit(countInt)
     .offset(skipInt)
-    .where('institute_id = ?', instituteID)
+    .where('faculty_id = ?', departmentID)
     .toString();
   req.pgClient.promiseQuery(query)
     .then(function(results) {
@@ -21,23 +21,23 @@ module.exports.getFacultiesList = function(req, res, next) {
     .fin(req.closeClient);
 };
 
-module.exports.createFaculty = function(req, res, next) {
+module.exports.createDepartment = function(req, res, next) {
   req.assert('name', 'name_required').notEmpty();
   if (req.validationErrors()) {
     req.closeClient();
     return res.status(400).end();
   }
 
-  const instituteId = req.session.instituteID;
+  const facultyId = req.session.facultyID;
   const values = {
     name: req.sanitize('name').escape(),
     name_abbr: req.sanitize('nameAbbr').escape(),
-    institute_id: instituteId
+    faculty_id: facultyId
   };
   escaper.sanitize(values)
     .then(function(results) {
       const query = squel.insert()
-        .into('juvity.faculties')
+        .into('juvity.departments')
         .setFields(results)
         .toString();
       return req.pgClient.promiseQuery(query);
@@ -47,7 +47,7 @@ module.exports.createFaculty = function(req, res, next) {
     })
     .fail(function(err) {
       if (err.code === '23505') {
-        err = new Error('Duplicate faculty');
+        err = new Error('Duplicate department');
         err.status = 403;
       }
 
@@ -56,9 +56,9 @@ module.exports.createFaculty = function(req, res, next) {
     .fin(req.closeClient);
 };
 
-module.exports.updateFaculty = function(req, res, next) {
-  const instituteID = req.sanitize('instituteID').escape();
+module.exports.updateDepartment = function(req, res, next) {
   const facultyID = req.sanitize('facultyID').escape();
+  const departmentID = req.sanitize('departmentID').escape();
   const values = {
     name: req.sanitize('name').escape(),
     name_abbr: req.sanitize('nameAbbr').escape()
@@ -66,10 +66,10 @@ module.exports.updateFaculty = function(req, res, next) {
   escaper.sanitize(values)
     .then(function(results) {
       const query = squel.update()
-        .table('juvity.faculties')
+        .table('juvity.departments')
         .setFields(results)
-        .where('id = ?', facultyID)
-        .where('institute_id = ?', instituteID)
+        .where('id = ?', departmentID)
+        .where('institute_id = ?', facultyID)
         .toString();
       return req.pgClient.promiseQuery(query);
     })
@@ -80,13 +80,13 @@ module.exports.updateFaculty = function(req, res, next) {
     .fin(req.closeClient);
 };
 
-module.exports.deleteFaculty = function(req, res, next) {
-  const instituteID = req.sanitize('instituteID').escape();
+module.exports.deleteDepartment = function(req, res, next) {
   const facultyID = req.sanitize('facultyID').escape();
+  const departmentID = req.sanitize('departmentID').escape();
   const query = squel.delete()
     .from('juvity.faculties')
-    .where('id = ?', facultyID)
-    .where('institute_id = ?', instituteID)
+    .where('id = ?', departmentID)
+    .where('institute_id = ?', facultyID)
     .toString();
   req.pgClient.promiseQuery(query)
     .then(function(results) {
@@ -94,7 +94,7 @@ module.exports.deleteFaculty = function(req, res, next) {
     })
     .fail(function(err) {
       if (err.code === '23503') {
-        err = new Error('Faculty already in use!');
+        err = new Error('Department already in use!');
         err.status = 403;
       }
 

@@ -53,3 +53,29 @@ module.exports.institute = function() {
       .fail(next);
   }
 };
+
+module.exports.faculty = function() {
+  return function(req, res, next) {
+    const facultyID = req.sanitize('facultyID').escape();
+    const subQuery = squel.select()
+      .field('1')
+      .from('juvity.faculties')
+      .where('id = ?', facultyID)
+      .limit(1);
+    const query = squel.select()
+      .field('EXISTS(' + subQuery + ')', 'exists')
+      .toString();
+    req.pgClient.promiseQuery(query)
+      .then(function(results) {
+        if (results.rows[0].exists === false) {
+          const error = new Error('Faculty id does not exists!');
+          error.status = 400;
+          return Q.reject(error);
+        }
+
+        req.session.facultyID = facultyID;
+        next();
+      })
+      .fail(next);
+  }
+};
