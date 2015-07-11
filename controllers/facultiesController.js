@@ -22,6 +22,38 @@ module.exports.getFacultiesList = function(req, res, next) {
 };
 
 module.exports.createFaculty = function(req, res, next) {
+  req.assert('name', 'name_required').notEmpty();
+  if (req.validationErrors()) {
+    req.closeClient();
+    return res.status(400).end();
+  }
+
+  const instituteId = req.sanitize('instituteID').escape();
+  const values = {
+    name: req.sanitize('name').escape(),
+    name_abbr: req.sanitize('nameAbbr').escape(),
+    institute_id: instituteId
+  };
+  escaper.sanitize(values)
+    .then(function(results) {
+      const query = squel.insert()
+        .into('juvity.faculties')
+        .setFields(results)
+        .toString();
+      return req.pgClient.promiseQuery(query);
+    })
+    .then(function(results) {
+      res.status(201).end();
+    })
+    .fail(function(err) {
+      if (err.code === '23505') {
+        err = new Error('Duplicate faculty');
+        err.status = 403;
+      }
+
+      next(err);
+    })
+    .fin(req.closeClient);
 };
 
 module.exports.updateFaculty = function(req, res, next) {
