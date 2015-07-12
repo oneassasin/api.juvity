@@ -79,3 +79,29 @@ module.exports.faculty = function() {
       .fail(next);
   }
 };
+
+module.exports.department = function() {
+  return function(req, res, next) {
+    const departmentID = req.sanitize('departmentID').escape();
+    const subQuery = squel.select()
+      .field('1')
+      .from('juvity.departments')
+      .where('id = ?', departmentID)
+      .limit(1);
+    const query = squel.select()
+      .field('EXISTS(' + subQuery + ')', 'exists')
+      .toString();
+    req.pgClient.promiseQuery(query)
+      .then(function(results) {
+        if (results.rows[0].exists === false) {
+          const error = new Error('Department id does not exists!');
+          error.status = 400;
+          return Q.reject(error);
+        }
+
+        req.session.departmentID = departmentID;
+        next();
+      })
+      .fail(next);
+  }
+};
