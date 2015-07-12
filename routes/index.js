@@ -1,4 +1,6 @@
 const debug = require('debug')('Errors');
+
+// Routers
 const sessionsRouter = require('./sessionsRouter');
 const usersRouter = require('./usersRouter');
 const userRolesRouter = require('./userRolesRouter');
@@ -12,6 +14,7 @@ const groupsRouter = require('./groupsRouter');
 const studentsRouter = require('./studentsRouter');
 const groupStudentsRouter = require('./groupStudentsRouter');
 const groupLessonsRouter = require('./groupLessonsRouter');
+const lessonNamesRouter = require('./lessonNamesRouter');
 
 module.exports = function(app) {
 
@@ -28,6 +31,7 @@ module.exports = function(app) {
   app.use('/', studentsRouter);
   app.use('/', groupStudentsRouter);
   app.use('/', groupLessonsRouter);
+  app.use('/', lessonNamesRouter);
 
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
