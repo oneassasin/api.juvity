@@ -6,6 +6,7 @@ const universitiesRouter = require('./universitiesRouter');
 const institutionsRouter = require('./institutionsRouter');
 const facultiesRouter = require('./facultiesRouter');
 const departmentsRouter = require('./departmentsRouter');
+const teacherRanksRouter = require('./teacherRanksRouter');
 
 module.exports = function(app) {
 
@@ -16,6 +17,7 @@ module.exports = function(app) {
   app.use('/', institutionsRouter);
   app.use('/', facultiesRouter);
   app.use('/', departmentsRouter);
+  app.use('/', teacherRanksRouter);
 
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
