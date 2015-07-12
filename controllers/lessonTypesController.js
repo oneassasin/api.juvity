@@ -34,7 +34,7 @@ module.exports.createLessonType = function(req, res, next) {
   };
   const query = squel.insert()
     .into('juvity.lesson_types')
-    .setFields(results)
+    .setFields(values)
     .toString();
   req.pgClient.promiseQuery(query)
     .then(function(results) {

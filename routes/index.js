@@ -16,6 +16,7 @@ const groupStudentsRouter = require('./groupStudentsRouter');
 const groupLessonsRouter = require('./groupLessonsRouter');
 const lessonNamesRouter = require('./lessonNamesRouter');
 const lessonTypesRouter = require('./lessonTypesRouter');
+const lessonSchedulesRouter = require('./lessonSchedulesRouter');
 
 module.exports = function(app) {
 
@@ -34,6 +35,7 @@ module.exports = function(app) {
   app.use('/', groupLessonsRouter);
   app.use('/', lessonNamesRouter);
   app.use('/', lessonTypesRouter);
+  app.use('/', lessonSchedulesRouter);
 
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
