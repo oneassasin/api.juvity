@@ -38,6 +38,7 @@ module.exports.institute = function() {
       .limit(1);
     const query = squel.select()
       .field('EXISTS(' + subQuery + ')', 'exists')
+      .from('juvity.users')
       .toString();
     req.pgClient.promiseQuery(query)
       .then(function(results) {
@@ -64,6 +65,7 @@ module.exports.faculty = function() {
       .limit(1);
     const query = squel.select()
       .field('EXISTS(' + subQuery + ')', 'exists')
+      .from('juvity.users')
       .toString();
     req.pgClient.promiseQuery(query)
       .then(function(results) {
@@ -90,6 +92,7 @@ module.exports.department = function() {
       .limit(1);
     const query = squel.select()
       .field('EXISTS(' + subQuery + ')', 'exists')
+      .from('juvity.users')
       .toString();
     req.pgClient.promiseQuery(query)
       .then(function(results) {
@@ -100,6 +103,33 @@ module.exports.department = function() {
         }
 
         req.session.departmentID = departmentID;
+        next();
+      })
+      .fail(next);
+  }
+};
+
+module.exports.group = function() {
+  return function(req, res, next) {
+    const groupID = req.sanitize('groupID').escape();
+    const subQuery = squel.select()
+      .field('1')
+      .from('juvity.groups')
+      .where('id = ?', groupID)
+      .limit(1);
+    const query = squel.select()
+      .field('EXISTS(' + subQuery + ')', 'exists')
+      .from('juvity.users')
+      .toString();
+    req.pgClient.promiseQuery(query)
+      .then(function(results) {
+        if (results.rows[0].exists === false) {
+          const error = new Error('Group id does not exists!');
+          error.status = 400;
+          return Q.reject(error);
+        }
+
+        req.session.groupID = groupID;
         next();
       })
       .fail(next);

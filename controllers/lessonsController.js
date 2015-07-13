@@ -67,7 +67,7 @@ module.exports.createLesson = function(req, res, next) {
     .fin(req.closeClient)
 };
 
-module.exports.deleteSemester = function(req, res, next) {
+module.exports.deleteLesson = function(req, res, next) {
   const lessonID = req.sanitize('lessonID').escape();
   const query = squel.delete()
     .from('juvity.lessons')

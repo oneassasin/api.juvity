@@ -23,8 +23,8 @@ module.exports.getGroupsList = function(req, res, next) {
 
 module.exports.createGroup = function(req, res, next) {
   req.assert('name', 'name_required').notEmpty();
-  req.assert('stream_number', 'stream_number_required').notEmpty();
-  req.assert('acquisition_year', 'acquisition_year_required').notEmpty();
+  req.assert('streamNumber', 'stream_number_required').notEmpty();
+  req.assert('acquisitionYear', 'acquisition_year_required').notEmpty();
   if (req.validationErrors()) {
     req.closeClient();
     return res.status(400).end();

@@ -19,6 +19,7 @@ const lessonTypesRouter = require('./lessonTypesRouter');
 const lessonSchedulesRouter = require('./lessonSchedulesRouter');
 const semestersRouter = require('./semestersRouter');
 const lessonsRouter = require('./lessonsRouter');
+const audacityRouter = require('./audacityRouter');
 
 module.exports = function(app) {
 
@@ -40,6 +41,7 @@ module.exports = function(app) {
   app.use('/', lessonSchedulesRouter);
   app.use('/', semestersRouter);
   app.use('/', lessonsRouter);
+  app.use('/', audacityRouter);
 
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
