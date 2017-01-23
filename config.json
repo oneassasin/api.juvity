@@ -7,7 +7,7 @@
     "defaultUserRoleId": 2
   },
   "database": {
-    "url": "postgres://onea:241994@127.0.0.1/juvity",
+    "url": "postgres://127.0.0.1/juvity",
     "mongoUrl": "mongodb://127.0.0.1:27017/juvity"
   },
   "session": {
